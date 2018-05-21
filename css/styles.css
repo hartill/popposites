@@ -1,0 +1,70 @@
+/* Bubble Pop page */
+.page-template-page-bubble-pop-words #minimal-header {
+	background-color: #16a085;
+	border-bottom: 0px;
+}
+.page-template-page-bubble-pop-words .page {
+	background: transparent;
+}
+.page-template-page-bubble-pop-words #course-more-information {
+	background-color: rgba(0,0,0,0.3);
+}
+#game-info-boxes {
+	display: none;
+	max-width: 1100px;
+	margin: 0 auto;
+}
+.game-info-box {
+	float: left;
+	width: 33.333%;
+	box-sizing: border-box;
+	padding: 15px;
+}
+#game-info-boxes .user_nav_header {
+	background-color: #16a085;
+	color: #ffffff;
+	text-align: center;
+}
+@media screen and (min-width: 768px) {
+	#game-info-boxes {
+		display: block;
+	}
+}
+.bubble-pop {
+	background: rgba(0,0,0,0.4);
+}
+#bubble-game {
+	width: 700px;
+	height: 230px;
+	background: url("./images/games/island-planet.png") no-repeat bottom center;
+	margin-top: -24px;
+	margin-left: -102px;
+}
+body {
+	/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#00182d+0,0b4247+48,043306+100 */
+	background: #00182d url("../images/small-effects.png"); /* Old browsers */
+	background: url("../images/big-effects-01.png"), url("../images/small-effects.png"), -moz-linear-gradient(-45deg,  #00182d 0%, #0b4247 48%, #043306 100%); /* FF3.6-15 */
+	background: url("../images/big-effects-01.png"),url("../images/small-effects.png"), -webkit-linear-gradient(-45deg,  #00182d 0%,#0b4247 48%,#043306 100%); /* Chrome10-25,Safari5.1-6 */
+	background: url("../images/big-effects-01.png"),url("../images/small-effects.png"), linear-gradient(135deg,  #00182d 0%,#0b4247 48%,#043306 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00182d', endColorstr='#043306',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+	-moz-animation: animatedBackground 25s linear infinite running;
+	-webkit-animation: animatedBackground 25s linear infinite running;
+	-ms-animation: animatedBackground 25s linear infinite running;
+}
+@keyframes animatedBackground {
+	from { background-position: 0px 0px, 0px 0px, 0px 0px; }
+	to { background-position: 0px -500px, 0px -250px, 0px 0px; }
+}
+@-moz-keyframes animatedBackground {
+	from { background-position: 0px 0px, 0px 0px, 0px 0px; }
+	to { background-position: 0px -500px, 0px -250px, 0px 0px; }
+}
+@-ms-keyframes animatedBackground {
+	from { background-position: 0px 0px, 0px 0px, 0px 0px; }
+	to { background-position: 0px -500px, 0px -250px, 0px 0px; }
+}
+#content {
+	max-width: 500px;
+	margin: 0 auto;
+	color: #ffffff;
+}
