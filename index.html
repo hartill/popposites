@@ -2,30 +2,27 @@
 <html>
 <head>
     <title>Popposites</title>
+    <link href="https://fonts.googleapis.com/css?family=Hind+Siliguri:300,400,500" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
 </head>
     <body>
-      <div id="course-page">
-      		<div id="primary" class="course-page">
-      			<div style = "color: #fff; width: 100%; background-color: #0F6A58; font-size: 21px; font-family: Snowburst One; padding: 8px 0px 8px 0px;">
-      				<table style="width: 100%; text-align: center;">
-      					<tr>
-      						<td style="text-align: center; width: 25%;"><div id ="level"></div></td>
-      						<td style="text-align: center; width: 25%;"><div id ="time"></div></td>
-      						<td style="text-align: center; width: 25%;"><div id ="lives" style="background: url('./images/heart-big.png') no-repeat center center; min-width: 65px; padding-top: 20px; min-height: 65px; box-sizing: border-box;"></div></td>
-      						<td style="text-align: center; width: 25%;"><div id ="score"></div></td>
-      					</tr>
-      				</table>
+      <div id="pop-page">
+      			<div class="pop-header" >
+  						<div id ="level" class="pop-header-column"></div>
+  						<div id ="time" class="pop-header-column"></div>
+  						<div id ="lives" class="pop-header-column"></div>
+  						<div id ="score" class="pop-header-column"></div></td>
       			</div>
       			<div id="content" style="padding: 15px 0px;" role="main">
               <canvas id="game-main" class="bubble-pop">Your browser does not support Javascript</canvas>
               <div id = "bubble-game"></div>
-      			</div><!-- #content -->
-      		</div><!-- #primary -->
+      			</div>
+            <div class="pop-footer">
+            </div>
       </div>
 
       <script type="text/javascript" src="./js/vocabulary.js"></script>
-
+    </body>
       <script>
 
       window.onload = function() {
@@ -36,7 +33,7 @@
       	canvas.width = 495;
       	canvas.height = 495;
       	var context = canvas.getContext('2d');
-      	context.font="16px Open Sans";
+      	context.font="16px Hind Siliguri";
       	context.textAlign = 'center';
       	context.fillStyle = '#ffffff';
 
@@ -688,6 +685,5 @@
       	}
       }
       </script>
-    </body>
     <script src="js/app.js"></script>
 </html>
