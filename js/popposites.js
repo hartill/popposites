@@ -1,15 +1,15 @@
-$( document ).ready(function() {
-	
+window.onload = function() {
+
 	//set up canvas
-	
+
 	var canvas = document.getElementById("game-main");
 	canvas.width = 495;
 	canvas.height = 495;
 	var context = canvas.getContext('2d');
-	context.font="16px Open Sans";
+	context.font="16px Hind Siliguri";
 	context.textAlign = 'center';
 	context.fillStyle = '#ffffff';
-	
+
 	//set up variables
 
 	var spacing = 125;
@@ -18,23 +18,24 @@ $( document ).ready(function() {
 	var spdY = -5;
 	var lives = 3;
 	var offset = 68;
+	var championScore = 10000;
 
 	var player = {};
-	player.name = '<?php echo $current_user->nickname;?>';
-	player.id = '<?php echo $user_id ?>';
+	player.name = 'Guest';
 	player.lives = lives;
-	player.topScore = parseInt('<?php echo get_user_meta($user_id, 'bubble_level', true);?>');
+	player.topScore = 0;
 	player.level = 1;
 	player.score = 0;
-	player.guest = false;
-	
+	player.guest = true;
+
 	var advance = false;
 	var restart = false;
 	var start = true;
 	var stopGame = false;
-	
+	var reload = false;
+
 	var countPops = 0;
-	
+
 	function isEmpty(obj) {
 		for(var prop in obj) {
 			if(obj.hasOwnProperty(prop))
@@ -50,52 +51,40 @@ $( document ).ready(function() {
 		player.name = 'Guest';
 		player.guest = true;
 	}
-	
-	//ajax stuff
-
-	function doAjaxPost(score) {
-		var ajaxurl = '/wordpress/wp-admin/admin-ajax.php';
-	
-		var data = {
-			action: 'bubble_pop',
-			user_id: player.id,
-			level: score,
-	};
-	console.log(data);
-	$.post(ajaxurl, data, function(response) {
-	console.log("Response: "+response);
-	});
-	}
 
 	//load images
-	
+
 	var bubbleImage1 = new Image();
-	bubbleImage1.src = "<?php echo get_template_directory_uri(); ?>/images/games/yellow-bubble-01.png";
+	bubbleImage1.src = "./images/yellow-bubble-01.png";
 	var bubbleImage2 = new Image();
-	bubbleImage2.src = "<?php echo get_template_directory_uri(); ?>/images/games/green-bubble-01.png";
+	bubbleImage2.src = "./images/green-bubble-01.png";
 	var bubbleImage3 = new Image();
-	bubbleImage3.src = "<?php echo get_template_directory_uri(); ?>/images/games/blue-bubble-01.png";
+	bubbleImage3.src = "./images/blue-bubble-01.png";
 	var bubbleImage4 = new Image();
-	bubbleImage4.src = "<?php echo get_template_directory_uri(); ?>/images/games/purple-bubble-01.png";
+	bubbleImage4.src = "./images/purple-bubble-01.png";
 	var bubbleImage5 = new Image();
-	bubbleImage5.src = "<?php echo get_template_directory_uri(); ?>/images/games/red-bubble-01.png";
+	bubbleImage5.src = "./images/red-bubble-01.png";
 	var bubbleImage6 = new Image();
-	bubbleImage6.src = "<?php echo get_template_directory_uri(); ?>/images/games/white-bubble-01.png";
+	bubbleImage6.src = "./images/white-bubble-01.png";
 
 	var bubblePopImage = new Image();
-	bubblePopImage.src = "<?php echo get_template_directory_uri(); ?>/images/games/bubble-sheet.png";
+	bubblePopImage.src = "./images/bubble-sheet.png";
 
 	var bubbleAnimation = {}; //popping bubble sprite
 	bubbleAnimation.width = 1200;
 	bubbleAnimation.height = 120;
 	bubbleAnimation.image = bubblePopImage;
-	
+
 	var startScreen = new Image();
-	startScreen.src = "<?php echo get_template_directory_uri(); ?>/images/games/start_screen-01.png";
+	startScreen.src = "./images/start_screen-01.png";
 	var levelComplete = new Image();
-	levelComplete.src = "<?php echo get_template_directory_uri(); ?>/images/games/level-complete-02.png";
+	levelComplete.src = "./images/level-complete-02.png";
 	var gameOver = new Image();
-	gameOver.src = "<?php echo get_template_directory_uri(); ?>/images/games/game-over-03.png";
+	gameOver.src = "./images/game-over-03.png";
+	var newTopScore = new Image();
+	newTopScore.src = "./images/top-score-04.png";
+	var newChampion = new Image();
+	newChampion.src = "./images/new-champion-05.png";
 
 
 	var bubbleImage = {
@@ -107,33 +96,43 @@ $( document ).ready(function() {
 		};
 
 	//generate random number for random bubble image
-	
+
 	function n() {
 		var n = Math.floor(Math.random() * 5) + 1;
 		return n;
 	}
-	
+
 	//draw start screen
 	startScreen.onload = function(e){
 		context.drawImage(startScreen, 0, 0);
 	}
-	
+
 	//gameover
 	function gameover() {
+		stopGame = true;
 		if ((player.score > player.topScore) && (player.guest == false)) {
-			doAjaxPost(player.score);
 			player.topScore = player.score;
+			if (player.score > championScore) {
+				context.drawImage(newChampion, 0, 0);
+				setTimeout(function(){ reaload = true; },2000);
+			} else {
+				context.drawImage(newTopScore, 0, 0);
+				setTimeout(function(){ restart = true; },2000);
+			}
+			clearInterval(myTimer);
+			bubbleList = {}
+		} else {
+			bubbleList = {}
+			setTimeout(function(){ restart = true; },1000);
+			context.drawImage(gameOver, 0, 0);
+			clearInterval(myTimer);
 		}
-		bubbleList = {}
-		restart = true;
-		context.drawImage(gameOver, 0, 0);
-		clearInterval(myTimer);
 	}
 
 	//set up timer
 	var myTimer;
 	function startTimer(duration, display) {
-    var timer = duration, minutes, seconds;
+		var timer = duration, minutes, seconds;
 	myTimer = setInterval(function () {
 			minutes = parseInt(timer / 60, 10);
 			seconds = parseInt(timer % 60, 10);
@@ -181,11 +180,11 @@ $( document ).ready(function() {
 			return y + (spacing + spacing + spacing);
 		}
 	}
-	
+
 	//load list of vocabulary
 
 	var vocabList = {};
-	
+
 	var numberOfWords = 30;
 
 	function newVocab(id, word, q_key, state) {
@@ -203,9 +202,9 @@ $( document ).ready(function() {
 		};
 		vocabList[n] = vocab;
 	}
-	
+
 	//generate initial bubbles from vocablist
-	
+
 	var bubbleList = {};
 
 	function initialBubbles() {
@@ -238,7 +237,7 @@ $( document ).ready(function() {
 			Bubble(vocabList[key].id, vocabList[key].word, col, row, image, pair_key, value, life);
 		}
 	}
-	
+
 	function headerText(){
 		level = document.querySelector('#level');
 		level.textContent = 'Level: ' + player.level;
@@ -250,13 +249,11 @@ $( document ).ready(function() {
 		if (player.score > player.topScore) {
 			liveTopScore = player.score;
 		}
-		highestLevel = document.querySelector('#highest-level');
-		highestLevel.textContent = liveTopScore;
 	}
-	
+
 	headerText();
 	display.textContent = "05:00";
-	
+
 	var startTime = (60 * 5) + 10
 	var timeLimit = startTime;
 
@@ -349,7 +346,7 @@ $( document ).ready(function() {
 				i += 1;
 			}
 		}
-		
+
 		//check there is at least one pair in the first 16 words generated
 		var everythingReady = false;
 
@@ -377,9 +374,9 @@ $( document ).ready(function() {
 			startTimer(timeLimit, display);
 		}
 	}
-	
+
 	//add a new bubble when one gets popped
-	
+
 	function newBubble(col, row, life){
 		for (var key in vocabList) {
 			if (vocabList[key].state == 0) {
@@ -402,7 +399,7 @@ $( document ).ready(function() {
 	}
 
 	// function to create a bubble object
-	
+
 	function Bubble(id, word, col, row, bubbleImage, q_key, value, life) {
 		var x = getCoordinatesCol(col);
 		var y = getCoordinatesRow(row);
@@ -411,10 +408,10 @@ $( document ).ready(function() {
 			word_y = image_y + offset;
 		} else if (life == 1) {
 			image_y = canvas.height + 5;
-			word_y = image_y + offset;		
+			word_y = image_y + offset;
 		} else {
 			image_y = y + spacing + spacing;
-			word_y = image_y + offset;			
+			word_y = image_y + offset;
 		}
 		var bubble = {
 			spd: 0,
@@ -439,7 +436,7 @@ $( document ).ready(function() {
 		};
 		bubbleList[id] = bubble;
 	}
-	
+
 	//set up variables and functions for popping bubble
 	function bubblePopping(id, col, row) {
 		var numberOfFrames = 10;
@@ -448,12 +445,12 @@ $( document ).ready(function() {
 		var frameIndex = bubbleList[id].frameIndex;
 		if (frameIndex < 11) {
 			context.drawImage(
-			bubbleAnimation.image, 
+			bubbleAnimation.image,
 			frameIndex * bubbleAnimation.width / numberOfFrames,
 			0,
 			bubbleAnimation.width / numberOfFrames,
-			bubbleAnimation.height, 
-			renderPopX, 
+			bubbleAnimation.height,
+			renderPopX,
 			renderPopY,
 			bubbleAnimation.width / numberOfFrames,
 			bubbleAnimation.height);
@@ -466,13 +463,14 @@ $( document ).ready(function() {
 				clearInterval(myTimer);
 				bubbleList = {};
 				player.score += 50;
-				advance = true;
+				stopGame = true;
+				setTimeout(function(){ advance = true; },1000);
 				context.drawImage(levelComplete, 0, 0);
 				headerText();
 			}
 		}
 	}
-	
+
 	//check for user click on bubble
 
 	function checkCollides(bubbleList, mouse_x, mouse_y) {
@@ -486,7 +484,7 @@ $( document ).ready(function() {
 			}
 		}
 	}
-	
+
 	function bubblePop(b1, b2) {
 		var b1Col = bubbleList[b1].column;
 		var b1OldRow = bubbleList[b1].row;
@@ -527,11 +525,11 @@ $( document ).ready(function() {
 		}
 		bubbleList[b1].popping = 1;
 		bubbleList[b2].popping = 1;
-		
+
 		countPops += 2;
 		player.score += bubbleList[b1].value;
 		//player.score += bubbleList[b2].value;
-		
+
 		if (countPops < 28) {
 			newBubble(b1Col, b1Row, life);
 			newBubble(b2Col, b2Row, life);
@@ -564,7 +562,7 @@ $( document ).ready(function() {
 			if (selectedWord1.q_key === selectedWord2.q_key) {
 				bubblePop(selectedWord1.id, selectedWord2.id);
 				selectedWord1 = {};
-				selectedWord2 = {};	
+				selectedWord2 = {};
 			} else {
 				bubbleList[selectedWord1.id].image = selectedWord1.originalImage;
 				bubbleList[selectedWord2.id].image = selectedWord2.originalImage;
@@ -575,7 +573,7 @@ $( document ).ready(function() {
 		}
 		headerText();
 	}
-	
+
 	canvas.addEventListener('click', function(e) {
 		var mouse_x = e.offsetX;
 		var mouse_y = e.offsetY;
@@ -607,12 +605,16 @@ $( document ).ready(function() {
 			player.level += 1;
 			initialiseVocab();
 			advance = false;
+			stopGame = false;
+		}
+		if (reload == true) {
+			location.reload();
 		}
 	}, false);
-	
+
 	//animation loop, interval and update
 	function animate() {
-		if ((start == false) && (stopGame == false) && (advance == false)) {
+		if ((start == false) && (stopGame == false) && (advance == false) && (reload == false)) {
 			context.clearRect(0, 0, canvas.width, canvas.height);
 			if (player.lives > 0) {
 				for(var key in bubbleList) {
@@ -639,7 +641,7 @@ $( document ).ready(function() {
 				for (var key in bubbleList) {
 					bubbleList[key].popping == 1;
 					bubbleList[key].frameIndex += 1;
-					bubblePopping(bubbleList[key].id, bubbleList[key].column, bubbleList[key].row);	
+					bubblePopping(bubbleList[key].id, bubbleList[key].column, bubbleList[key].row);
 				}
 				if (isEmpty(bubbleList)) {
 					gameover();
@@ -654,4 +656,4 @@ $( document ).ready(function() {
 	function update() {
 		animate();
 	}
-}); //document ready
+}
